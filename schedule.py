@@ -1,3 +1,7 @@
+"""
+    Writes routes with all additional info to database
+"""
+
 from pprint import pprint as pp
 from bs4 import BeautifulSoup
 import urllib3
@@ -74,4 +78,9 @@ while i < len(ids):
 
     i += 1
 
+# TODO: Write to database
+
 pp(routes)
+
+with open('rts', 'w') as outfile:
+    json.dump(routes, outfile)
