@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib3
+from pprint import pprint as pp
 
 
 def getPrices():
@@ -25,19 +26,39 @@ def getPrices():
         'td', {'colspan': '2'})[6].findAll('div')]
     tables = soup.findAll('td', {'colspan': '2'})[6].findAll('table')
 
-    prices = []
-
     # MERGING ALL THE DATA INTO ONE LIST
 
+    prices = {}
+    regions = ['KYIV', 'ZSVH', 'CHER']
+    region_ptr = -1
+
     for i in range(len(tables)):
-        prices.append({})
-        prices[i]['name'] = (str(divs[i])[52:-6].split('<br/>')[0] + '\n' +
-                             str(divs[i])[52:-6].split('<br/>')[1] + ' ' +
-                             str(divs[i])[52:-6].split('<br/>')[2])
 
-        prices[i]['lines'] = []
+        name = str(divs[i])[52:-6].split('<br/>')
 
-        for r in tables[i].findAll('tr'):
-            prices[i]['lines'].append([d.text for d in r.findAll('td')])
+        if len(name) == 3:
+
+            prices[regions[region_ptr]].append({})
+
+            (prices[regions[region_ptr]]
+                   [len(prices[regions[region_ptr]]) - 1]
+                   ['name']) = (name[0] + '\n' +
+                                name[1] + '\n' +
+                                name[2])
+
+            (prices[regions[region_ptr]]
+                   [len(prices[regions[region_ptr]]) - 1]
+                   ['lines']) = []
+
+            for tr in tables[i].findAll('tr'):
+                (prices[regions[region_ptr]]
+                       [len(prices[regions[region_ptr]]) - 1]
+                       ['lines'].append([td.text for td in tr.findAll('td')]))
+        else:
+            region_ptr += 1
+            prices[regions[region_ptr]] = []
 
     return prices
+
+
+pp(getPrices())
